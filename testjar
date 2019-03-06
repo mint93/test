@@ -1,0 +1,10 @@
+jar docs
+https://docs.oracle.com/javase/7/docs/technotes/tools/windows/jar.html
+
+tutorial
+https://docs.oracle.com/javase/tutorial/deployment/jar/update.html
+
+    Use jar -xvf to extract the files to a directory.
+    Make your changes and replace the classes.
+    Use jar -cvf to create a new jar file.
+
