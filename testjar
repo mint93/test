@@ -8,3 +8,30 @@ https://docs.oracle.com/javase/tutorial/deployment/jar/update.html
     Make your changes and replace the classes.
     Use jar -cvf to create a new jar file.
 
+
+
+public class SharedThreadContext {
+	private final ReentrantLock lock = new ReentrantLock(); 
+
+	private final long id;
+
+	public SharedThreadContext(long id) {
+		this.id = id;
+	}
+
+	public void performOnProtectedResource(Consumer<Optional<Long>> protectedResource) {
+		try {
+		if (lock.tryLock()) {
+			System.out.println("Acquired lock for id " + id);
+			protectedResource.accept(Optional.of(id));
+		} else {
+			protectedResource.accept(Optional.empty());
+		}
+		} finally {
+			if (lock.isHeldByCurrentThread()) {
+				lock.unlock();
+				System.out.println("Released lock for id " + id);
+			}
+		}
+	}
+}
