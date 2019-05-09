@@ -35,3 +35,5 @@ public class SharedThreadContext {
 		}
 	}
 }
+
+Pattern pattern = Pattern.compile("230-\\{(.+)\\}\t\"(.+)\"\t(aval\\(1\\)|n\\/a\\(0\\))");
