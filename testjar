@@ -9,31 +9,159 @@ https://docs.oracle.com/javase/tutorial/deployment/jar/update.html
     Use jar -cvf to create a new jar file.
 
 
+spring.liquibase.url=jdbc:mysql://localhost:3306/Test
+spring.liquibase.user=root
+spring.liquibase.password=root
+spring.liquibase.updateDatabase=false
+spring.liquibase.updateDatabaseToSql=false
+spring.liquibase.generateChangeLog=false
+spring.liquibase.synchronizeChangeLog=true
+#spring.liquibase.rollbackToVersion=0.0.1
+spring.liquibase.contexts=base
 
-public class SharedThreadContext {
-	private final ReentrantLock lock = new ReentrantLock(); 
 
-	private final long id;
 
-	public SharedThreadContext(long id) {
-		this.id = id;
-	}
 
-	public void performOnProtectedResource(Consumer<Optional<Long>> protectedResource) {
-		try {
-		if (lock.tryLock()) {
-			System.out.println("Acquired lock for id " + id);
-			protectedResource.accept(Optional.of(id));
-		} else {
-			protectedResource.accept(Optional.empty());
-		}
-		} finally {
-			if (lock.isHeldByCurrentThread()) {
-				lock.unlock();
-				System.out.println("Released lock for id " + id);
-			}
-		}
-	}
-}
 
-Pattern pattern = Pattern.compile("230-\\{(.+)\\}\t\"(.+)\"\t(aval\\(1\\)|n\\/a\\(0\\))");
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+	<include file="liquibase-changeLog-0.0.1.xml" relativeToChangelogFile="true"/>
+	<changeSet author="nabrdalb" id="0.0.1">
+	    <tagDatabase tag="0.0.1"/>
+	</changeSet>
+    
+	<include file="liquibase-changeLog-0.0.2.xml" relativeToChangelogFile="true"/>
+	<changeSet author="nabrdalb" id="0.0.2">
+    	<tagDatabase tag="0.0.2"/>
+	</changeSet>
+	
+</databaseChangeLog>
+
+
+
+
+
+
+
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="nabrdalb" id="1549743350354-1" context="base, legacy">
+    	<preConditions onFail="MARK_RAN">
+    		<not><tableExists tableName="Table1"/></not>
+    	</preConditions>
+        <createTable tableName="Table1">
+            <column name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="material_number" type="VARCHAR(10)"/>
+            <column name="serial_number" type="VARCHAR(10)"/>
+            <column name="quantity" type="INT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="Table1"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet author="nabrdalb" id="1549743350354-2" context="base, legacy">
+    	<preConditions onFail="MARK_RAN">
+    		<not><tableExists tableName="Table2"/></not>
+    	</preConditions>
+        <createTable tableName="Table2">
+            <column name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="message_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="Table2"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
+
+
+
+
+
+
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+<changeSet author="nabrdalb" id="1549746930387-1" context="base">
+    	<preConditions onFail="MARK_RAN">
+    		<not><tableExists tableName="TABLE_NEW_VERSION"/></not>
+    	</preConditions>
+        <createTable tableName="TABLE_NEW_VERSION">
+            <column name="ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PK_TABLE_NEW_VERSION"/>
+            </column>
+            <column name="MESSAGE_NAME" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MESSAGE_TYPE" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MESSAGE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TARGET_RESOURCE" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="TABLE_NEW_VERSION"/>
+        </rollback>
+        <loadData encoding="UTF-8"
+                  file="db/changelog/data.csv"
+                  separator=";"
+                  tableName="TABLE_NEW_VERSION">
+            <column name="enabled" type="boolean"/>
+        </loadData>
+    </changeSet>
+    
+    <changeSet author="nabrdalb" id="1549746930387-2" context="frd">
+    	<preConditions onFail="MARK_RAN">
+    		<not><tableExists tableName="frd_only"/></not>
+    	</preConditions>
+        <createTable tableName="frd_only">
+            <column name="ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PK_TABLE_FRD_ONLY"/>
+            </column>
+            <column name="FRD_LINE" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="frd_only"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="nabrdalb" id="1549746930387-3" context="passau">
+    	<preConditions onFail="MARK_RAN">
+    		<not><tableExists tableName="passau_only"/></not>
+    	</preConditions>
+        <createTable tableName="passau_only">
+            <column name="ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PK_TABLE_PASSAU_ONLY"/>
+            </column>
+            <column name="passau_only" type="VARCHAR2(255 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="passau_only"/>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>
