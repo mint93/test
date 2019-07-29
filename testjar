@@ -9,6 +9,8 @@ https://docs.oracle.com/javase/tutorial/deployment/jar/update.html
     Use jar -cvf to create a new jar file.
 
 
+^(P\d{3}|S\d{3,5}|(?:V\d{3})?)(?!\1)(P\d{3}|S\d{3,5}|(?:V\d{3})?)(?!\1|\2)(P\d{3}|S\d{3,5}|(?:V\d{3})?)$
+
 spring.liquibase.url=jdbc:mysql://localhost:3306/Test
 spring.liquibase.user=root
 spring.liquibase.password=root
