@@ -44,6 +44,46 @@ spring.liquibase.contexts=base
 
 
 
+// Typesafe heterogeneous container pattern - API
+public class Favorites {
+public <T> void putFavorite(Class<T> type, T instance);
+public <T> T getFavorite(Class<T> type);
+}
+
+// Typesafe heterogeneous container pattern - client
+public static void main(String[] args) {
+Favorites f = new Favorites();
+f.putFavorite(String.class, "Java");
+f.putFavorite(Integer.class, 0xcafebabe);
+f.putFavorite(Class.class, Favorites.class);
+String favoriteString = f.getFavorite(String.class);
+int favoriteInteger = f.getFavorite(Integer.class);
+Class<?> favoriteClass = f.getFavorite(Class.class);
+System.out.printf("%s %x %s%n", favoriteString,favoriteInteger, favoriteClass.getName());
+}
+
+// Typesafe heterogeneous container pattern - implementation
+public class Favorites {
+private Map<Class<?>, Object> favorites = new HashMap<>();
+public <T> void putFavorite(Class<T> type, T instance) {
+favorites.put(Objects.requireNonNull(type), instance);
+}
+public <T> T getFavorite(Class<T> type) {
+return type.cast(favorites.get(type));
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
